@@ -1,33 +1,21 @@
 #include <algorithm>
-#include <iostream>
 #include <cassert>
-#include <set>
-#include <string>
+#include <iostream>
 #include <sstream>
-#include <string_view>
+#include <string>
 #include <vector>
 
 using namespace std;
 
 class Domain {
 public:
-    // конструктор должен позволять конструирование из string, с сигнатурой определитесь сами
     Domain(const string& name):name_(name) {
         reverse(name_.begin(), name_.end());
         name_ += ".";
     }
 
-    string Name() {
-        return name_;
-    }
-
     string Name() const {
         return name_;
-    }
-    // разработайте operator==
-    bool operator==(const Domain& rhs)
-    {
-        return name_ == rhs.name_;
     }
 
     bool operator==(const Domain& rhs) const
@@ -35,29 +23,21 @@ public:
         return name_ == rhs.name_;
     }
 
-    bool operator< (const Domain& rhs) 
-    {
-        return name_ < rhs.name_;
-    }
-
     bool operator< (const Domain& rhs) const
     {
         return name_ < rhs.name_;
     }
-    // разработайте метод IsSubdomain, принимающий другой домен и возвращающий true, если this его поддомен
+ 
     bool IsSubDomain(const Domain& rhs) const {
         return !(rhs.name_.size() == 0) && name_.find(rhs.name_) == 0;
     }
-    bool IsSubDomain(const Domain& rhs)  {
-        return !(rhs.name_.size() == 0) && name_.find(rhs.name_) == 0;
-    }
+
 private:
     string name_;
 };
 
 class DomainChecker {
 public:
-    // конструктор должен принимать список запрещённых доменов через пару итераторов
     template <typename T>
     DomainChecker(T begin, T end): forbidden_domains_(begin, end){
         sort(forbidden_domains_.begin(), forbidden_domains_.end());
@@ -68,7 +48,6 @@ public:
         forbidden_domains_.erase(it, forbidden_domains_.end());
     }
 
-    // разработайте метод IsForbidden, возвращающий true, если домен запрещён
     bool IsForbidden(const Domain& domain) const {
         auto it = upper_bound(forbidden_domains_.begin(), forbidden_domains_.end(), domain);
         return it != forbidden_domains_.begin() && domain.IsSubDomain(*prev(it));
@@ -78,7 +57,6 @@ private:
     vector<Domain> forbidden_domains_;
 };
 
-// разработайте функцию ReadDomains, читающую заданное количество доменов из стандартного входа
 template <typename Number>
 vector<Domain> ReadDomains(istream& input, Number num) {
     vector<Domain> names;
