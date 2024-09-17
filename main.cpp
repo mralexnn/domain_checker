@@ -1,67 +1,43 @@
 #include <algorithm>
-#include <iostream>
 #include <cassert>
-#include <set>
-#include <string>
+#include <iostream>
 #include <sstream>
-#include <string_view>
+#include <string>
 #include <vector>
 
 using namespace std;
 
 class Domain {
 public:
-    // êîíñòðóêòîð äîëæåí ïîçâîëÿòü êîíñòðóèðîâàíèå èç string, ñ ñèãíàòóðîé îïðåäåëèòåñü ñàìè
     Domain(const string& name):name_(name) {
         reverse(name_.begin(), name_.end());
         name_ += ".";
     }
 
-    string Name() {
-        return name_;
-    }
-
     string Name() const {
         return name_;
-    }
-    // ðàçðàáîòàéòå operator==
-    //Думаю, что неконстантный оператор сравнения будет излишен, т.к. потенциальная возможность изменения внутри оператора
-    //нарушает саму логику сравнения. В случае если оставить только константный оператор, и кто-либо попытается поменять через
-    //него значнеие, то компилятор не позволит это сделать. При этом он таже будет работать для неконстантных объектов.
-    bool operator==(const Domain& rhs)
-    {
-        return name_ == rhs.name_;
     }
 
     bool operator==(const Domain& rhs) const
     {
         return name_ == rhs.name_;
     }
-    //То же самое что и со сравнением
-    bool operator< (const Domain& rhs) 
-    {
-        return name_ < rhs.name_;
-    }
 
     bool operator< (const Domain& rhs) const
     {
         return name_ < rhs.name_;
     }
-    // ðàçðàáîòàéòå ìåòîä IsSubdomain, ïðèíèìàþùèé äðóãîé äîìåí è âîçâðàùàþùèé true, åñëè this åãî ïîääîìåí
-    //Очень хороший метод по поиску подстроки, но пять же, я бы убрал неконстантный метод.
+ 
     bool IsSubDomain(const Domain& rhs) const {
         return !(rhs.name_.size() == 0) && name_.find(rhs.name_) == 0;
     }
-    bool IsSubDomain(const Domain& rhs)  {
-        return !(rhs.name_.size() == 0) && name_.find(rhs.name_) == 0;
-    }
+
 private:
     string name_;
 };
 
 class DomainChecker {
 public:
-    // êîíñòðóêòîð äîëæåí ïðèíèìàòü ñïèñîê çàïðåù¸ííûõ äîìåíîâ ÷åðåç ïàðó èòåðàòîðîâ
     template <typename T>
     DomainChecker(T begin, T end): forbidden_domains_(begin, end){
         sort(forbidden_domains_.begin(), forbidden_domains_.end());
@@ -72,7 +48,6 @@ public:
         forbidden_domains_.erase(it, forbidden_domains_.end());
     }
 
-    // ðàçðàáîòàéòå ìåòîä IsForbidden, âîçâðàùàþùèé true, åñëè äîìåí çàïðåù¸í
     bool IsForbidden(const Domain& domain) const {
         auto it = upper_bound(forbidden_domains_.begin(), forbidden_domains_.end(), domain);
         return it != forbidden_domains_.begin() && domain.IsSubDomain(*prev(it));
@@ -82,7 +57,6 @@ private:
     vector<Domain> forbidden_domains_;
 };
 
-// ðàçðàáîòàéòå ôóíêöèþ ReadDomains, ÷èòàþùóþ çàäàííîå êîëè÷åñòâî äîìåíîâ èç ñòàíäàðòíîãî âõîäà
 template <typename Number>
 vector<Domain> ReadDomains(istream& input, Number num) {
     vector<Domain> names;
